@@ -233,15 +233,28 @@
   .filigrana span{height:1px;width:52px;background:currentColor}
 
   .galeria{margin:0 0 28px}
-  .galeria .secundarias{
-    display:flex;justify-content:center;gap:14px;margin-top:22px;flex-wrap:wrap;
+  .tira{
+    display:grid;grid-template-columns:repeat(auto-fill, minmax(62px,1fr));
+    gap:7px;margin-top:22px;
   }
-  .galeria .secundarias .impresion{
-    width:min(146px,40%);margin:0;padding:7px 7px 26px;transform:rotate(-1.8deg);
+  .mini{
+    padding:0;border:0;background:#fff;cursor:pointer;display:block;
+    box-shadow:0 3px 10px rgba(59,28,43,.18);
+    transition:transform .3s cubic-bezier(.2,.7,.3,1), box-shadow .3s ease;
   }
-  .galeria .secundarias .impresion:nth-child(even){transform:rotate(2.2deg)}
-  .galeria .secundarias .impresion::before{width:38px;height:13px}
-  .galeria .secundarias figcaption{font-size:.95rem;bottom:7px}
+  .mini img{
+    display:block;width:100%;aspect-ratio:1/1;object-fit:cover;
+    opacity:.62;transition:opacity .3s ease;
+  }
+  .mini:hover img,.mini:focus-visible img{opacity:1}
+  .mini:hover{transform:translateY(-2px)}
+  .mini.activa{box-shadow:0 0 0 2px var(--rosa-hondo), 0 6px 14px rgba(59,28,43,.24)}
+  .mini.activa img{opacity:1}
+  .mini:focus-visible{outline:2px solid var(--rosa-hondo);outline-offset:2px}
+  .cuenta-fotos{
+    font-family:var(--t-util);font-size:.52rem;font-weight:400;letter-spacing:.26em;
+    text-transform:uppercase;color:var(--tinta-suave);text-align:center;margin:14px 0 0;
+  }
   .impresion{
     position:relative;width:min(248px,68%);margin:0 auto;
     background:#fff;padding:11px 11px 42px;
@@ -316,7 +329,7 @@
 <section class="velo" id="velo">
   <p class="para">Para mi esposa</p>
   <h1 class="firma-nombre">Vania Valeria</h1>
-  <p class="sub">Hoy el mundo regala flores amarillas.<br>Yo te traje un universo, y es rosado.</p>
+  <p class="sub">Dos años para encontrarnos.<br>Cien días para no soltarnos.<br>Hoy te traje un universo, y es rosado.</p>
   <button class="abrir" id="btn-abrir" type="button">Ábrelo</button>
 </section>
 
@@ -350,7 +363,7 @@
     <ul class="indice" id="indice" aria-label="Nuestras etapas"></ul>
 
     <button class="carta-cta" id="btn-carta" type="button">mi carta para ti</button>
-    <p class="pista"><b>Gira</b> el universo · <b>abre</b> las ocho flores</p>
+    <p class="pista"><b>Gira</b> el universo · <b>abre</b> las diez flores</p>
   </footer>
 </div>
 
@@ -376,87 +389,115 @@
   var BODA   = new Date(2026, 8, 4);
   var DIA = 86400000;
 
+  var FOTOS = {
+    g1:["fotos/g1/01.jpg","fotos/g1/02.jpg","fotos/g1/03.jpg","fotos/g1/04.jpg","fotos/g1/05.jpg"],
+    g2:["fotos/g2/01.jpg","fotos/g2/02.jpg","fotos/g2/03.jpg","fotos/g2/04.jpg","fotos/g2/05.jpg","fotos/g2/06.jpg","fotos/g2/07.jpg","fotos/g2/08.jpg"],
+    g3:["fotos/g3/01.jpg","fotos/g3/02.jpg","fotos/g3/03.jpg","fotos/g3/04.jpg","fotos/g3/05.jpg"],
+    g4:["fotos/g4/01.jpg","fotos/g4/02.jpg","fotos/g4/03.jpg","fotos/g4/04.jpg"],
+    g5:["fotos/g5/01.jpg","fotos/g5/02.jpg","fotos/g5/03.jpg","fotos/g5/04.jpg"],
+    g6:["fotos/g6/01.jpg","fotos/g6/02.jpg","fotos/g6/03.jpg","fotos/g6/04.jpg","fotos/g6/05.jpg","fotos/g6/06.jpg"],
+    g7:["fotos/g7/01.jpg","fotos/g7/02.jpg","fotos/g7/03.jpg","fotos/g7/04.jpg","fotos/g7/05.jpg","fotos/g7/06.jpg","fotos/g7/07.jpg","fotos/g7/08.jpg","fotos/g7/09.jpg","fotos/g7/10.jpg","fotos/g7/11.jpg","fotos/g7/12.jpg","fotos/g7/13.jpg"],
+    g8:["fotos/g8/01.jpg","fotos/g8/02.jpg","fotos/g8/03.jpg","fotos/g8/04.jpg","fotos/g8/05.jpg","fotos/g8/06.jpg"],
+  };
+
   var ETAPAS = [
     {
-      etiqueta:"La semilla", anio:"13 · 06 · 2026",
+      etiqueta:"El curso", anio:"septiembre 2024",
+      fecha:"septiembre de 2024 · el curso de finanzas",
+      titulo:"Te conocí hablando de números",
+      pieFoto:"antes de todo",
+      texto:"<p>Un curso de finanzas. Tasas, plazos, valor presente. Nadie te avisa que ahí, entre números, vas a conocer a la persona con la que te vas a casar.</p><p><em>Dos años después entendí que ese día ya había empezado todo, solo que muy despacio.</em></p>",
+      color:0xd42a75, radio:34, altura:4, escala:0.8
+    },
+    {
+      etiqueta:"La espera", anio:"2024 → 2025",
+      fecha:"2024 · 2025 · la espera",
+      titulo:"Una vez al año, y eso bastó para no olvidarte",
+      pieFoto:"los años que no nos vimos",
+      texto:"<p>Nos vimos una vez en 2024. Una vez en 2025. Nada más.</p><p>Dos años enteros en los que la vida nos puso lejos y aun así no te borré. <em>Hay gente que se olvida en dos semanas; tú no te me olvidaste en dos años.</em></p>",
+      color:0xe8368a, radio:31, altura:-6, escala:0.85
+    },
+    {
+      etiqueta:"La primera cita", anio:"13 · 06 · 2026",
       fecha:"13 de junio de 2026 · la semilla",
-      titulo:"El día que dijimos que sí",
-      foto:"Foto de nuestros primeros días", pie:"donde empezó todo",
-      texto:"<p>Un 13 de junio dejaste de ser la persona que me gustaba para ser <em>mi persona</em>. No hubo flores ese día, Vania: hubo nervios, risas y la certeza tonta y hermosa de que esto iba en serio.</p>",
-      fotos:[{src:"fotos/01.jpg", pie:"la primera noche"}],
-      color:0xff3f92, radio:30, altura:6, escala:0.95
+      titulo:"Dos años después, por fin",
+      pieFoto:"la primera noche",
+      texto:"<p>2026 fue el año en que el mundo por fin se puso de acuerdo. Salimos, y ese 13 de junio dejaste de ser la persona que recordaba desde el curso para ser <em>mi persona</em>.</p><p>No hubo flores ese día, Vania: hubo nervios, risas y la certeza tonta y hermosa de que esto iba en serio.</p>",
+      fotos:FOTOS.g1,
+      color:0xff3f92, radio:28, altura:7, escala:0.95
     },
     {
       etiqueta:"El gimnasio", anio:"nuestra rutina",
-      fecha:"la segunda · el gimnasio",
+      fecha:"el gimnasio",
       titulo:"Ahí supe que contigo todo era juego",
-      foto:"Foto en el gimnasio", pie:"los dos en el espejo",
+      pieFoto:"nuestro espejo",
       texto:"<p>Nos vimos en el espejo y ya no éramos dos personas conociéndose: éramos <em>un equipo</em>. Te cargué, nos reímos, y me quedé con esa foto porque ahí sales tal como eres conmigo.</p>",
-      fotos:[{src:"fotos/02.jpg", pie:"nuestro espejo"}],
-      color:0xff579f, radio:27, altura:-7, escala:0.95
+      fotos:FOTOS.g2,
+      color:0xff579f, radio:25, altura:-9, escala:0.95
     },
     {
-      etiqueta:"El tatuaje", anio:"la tercera",
-      fecha:"la tercera · antes del tatuaje",
+      etiqueta:"El tatuaje", anio:"tinta",
+      fecha:"antes del tatuaje",
       titulo:"Te llevé en la piel antes que en el papel",
-      foto:"Foto antes del tatuaje", pie:"una flor en tu pelo",
-      texto:"<p>Ese día te pusiste una flor en el pelo sin saber que años después yo te iba a regalar un universo entero de ellas.</p><p>Nos marcamos la piel, Vania. <em>Lo que se tatúa no se borra, y lo que siento tampoco.</em></p>",
-      fotos:[{src:"fotos/03.jpg", pie:"la flor en tu pelo"},{src:"fotos/03b.jpg", pie:"tinta"}],
-      color:0xff6cab, radio:24, altura:9, escala:1.0
+      pieFoto:"la flor en tu pelo",
+      texto:"<p>Ese día te pusiste una flor en el pelo sin saber que meses después yo te iba a regalar un universo entero de ellas.</p><p>Nos marcamos la piel, Vania. <em>Lo que se tatúa no se borra, y lo que siento tampoco.</em></p>",
+      fotos:FOTOS.g3,
+      color:0xff6cab, radio:22, altura:8, escala:1.0
     },
     {
-      etiqueta:"Las rosas", anio:"la cuarta",
-      fecha:"la cuarta · el ramo",
+      etiqueta:"Las rosas", anio:"el ramo",
+      fecha:"el ramo",
       titulo:"Un corazón hecho con las manos",
-      foto:"Foto del ramo", pie:"flores y un corazón",
+      pieFoto:"nuestro corazón",
       texto:"<p>Hicimos un corazón con las manos sobre un ramo de rosas, como si quisiéramos firmar el momento. Yo ya sabía lo que estaba firmando.</p><p><em>Desde entonces, cada flor que veo me acuerda de ti.</em></p>",
-      fotos:[{src:"fotos/04.jpg", pie:"nuestro corazón"},{src:"fotos/04b.jpg", pie:"ese beso"}],
-      color:0xff84b9, radio:21, altura:-4, escala:1.0
+      fotos:FOTOS.g4,
+      color:0xff84b9, radio:19.5, altura:-4, escala:1.0
     },
     {
-      etiqueta:"El sol", anio:"la quinta",
-      fecha:"la quinta · un día de sol",
+      etiqueta:"El sol", anio:"un día cualquiera",
+      fecha:"un día de sol",
       titulo:"Los días comunes, que son los que cuentan",
-      foto:"Foto de un día de sol", pie:"un martes cualquiera",
+      pieFoto:"solo nosotros",
       texto:"<p>Sin ocasión, sin fecha especial: solo sol, caminar y tú a mi costado. Los días grandes se celebran, pero yo me enamoré en los días comunes.</p><p><em>Contigo hasta lo normal se siente bonito.</em></p>",
-      fotos:[{src:"fotos/05.jpg", pie:"solo nosotros"}],
-      color:0xff9cc6, radio:18.5, altura:7, escala:1.0
+      fotos:FOTOS.g5,
+      color:0xff9cc6, radio:17, altura:6, escala:1.0
     },
     {
-      etiqueta:"Camino a ti", anio:"la sexta",
-      fecha:"la sexta · en camino",
+      etiqueta:"Camino a ti", anio:"siempre juntos",
+      fecha:"en camino",
       titulo:"Siempre terminábamos yendo al mismo lugar",
-      foto:"Foto de camino", pie:"siempre juntos",
+      pieFoto:"en camino",
       texto:"<p>No importaba a dónde: bastaba que fuéramos los dos. Hay gente que hace planes; nosotros solo necesitábamos estar en el mismo sitio.</p><p><em>Y todos esos caminos iban, sin saberlo, hacia septiembre.</em></p>",
-      fotos:[{src:"fotos/06.jpg", pie:"en camino"}],
-      color:0xffb0d1, radio:16, altura:-9, escala:1.05
+      fotos:FOTOS.g6,
+      color:0xffb0d1, radio:14.5, altura:-8, escala:1.05
     },
     {
       etiqueta:"La boda", anio:"04 · 09 · 2026",
       fecha:"4 de septiembre de 2026 · la flor",
       titulo:"Te dije “para siempre” en voz alta",
-      foto:"Foto de nuestra boda", pie:"4 · 09 · 2026",
-      texto:"<p>Ese día firmamos lo que ya sabía mi corazón desde junio. Te vi de blanco, con tu ramo, y entendí que la palabra <em>esposa</em> iba a ser mi palabra favorita del idioma.</p><p>Firmamos un papel delante de todos, pero lo nuestro ya estaba firmado desde el 13 de junio.</p>",
-      fotos:[{src:"fotos/07.jpg", pie:"señor y señora"},{src:"fotos/07b.jpg", pie:"el sí"},{src:"fotos/07c.jpg", pie:"los anillos"}],
-      color:0xffc8e0, radio:12.5, altura:2, escala:1.45
+      pieFoto:"señor y señora",
+      texto:"<p>Ese día firmamos lo que ya sabía mi corazón desde junio. Te vi de blanco, con tu ramo, y entendí que la palabra <em>esposa</em> iba a ser mi palabra favorita del idioma.</p><p>Casi dos años exactos después de aquel curso de finanzas. <em>El cálculo más rentable de mi vida no lo aprendí ahí: lo aprendí contigo.</em></p>",
+      fotos:FOTOS.g7,
+      color:0xffc8e0, radio:11.5, altura:2, escala:1.45
     },
     {
       etiqueta:"Hoy", anio:"21 · 09 · 2026",
       fecha:"21 de septiembre de 2026 · hoy",
       titulo:"Cien días exactos, y recién empezamos",
-      foto:"Foto de nosotros hoy", pie:"día de las flores",
-      fotos:[{src:"fotos/08.jpg", pie:"hoy"},{src:"fotos/08b.jpg", pie:"nuestros colores"}],
-      texto:"<p>Mira la coincidencia: hoy, día de las flores, se cumplen <em>exactamente cien días</em> desde el 13 de junio. Cien juntos, diecisiete de casados y una primavera entera por delante.</p><p>Si el mundo entero regala amarillo, yo te lo pinto <em>rosado</em>, porque a ti te gusta así. Estas flores se van a marchitar; lo que siento por ti no tiene esa costumbre.</p>",
-      color:0xffe0ee, radio:9.5, altura:-2, escala:1.25
+      pieFoto:"hoy",
+      texto:"<p>Mira la coincidencia: hoy, día de las flores, se cumplen <em>exactamente cien días</em> desde el 13 de junio. Cien juntos, diecisiete de casados, y dos años desde que te vi por primera vez.</p><p>Si el mundo entero regala amarillo, yo te lo pinto <em>rosado</em>, porque a ti te gusta así. Estas flores se van a marchitar; lo que siento por ti no tiene esa costumbre.</p>",
+      fotos:FOTOS.g8,
+      color:0xffe0ee, radio:9, altura:-2, escala:1.25
     }
   ];
 
   var CARTA = {
     fecha:"para Vania Valeria Nina",
     titulo:"Mi carta de flores rosadas",
-    foto:"Foto favorita de los dos", pie:"nosotros",
-    fotos:[{src:"fotos/07b.jpg", pie:"para siempre"}],
+    pieFoto:"para siempre",
+    fotos:FOTOS.g7,
     texto:"<p>Hoy toca regalar flores amarillas: las del inicio, las de la suerte, las de la primavera. Yo te las doy <em>rosadas</em>, porque el rosado es tuyo y porque lo mío contigo nunca fue seguir la costumbre.</p>"+
+          "<p>Dos años, Vania. Dos años desde aquel curso, viéndonos una vez al año, hasta que por fin fue el momento. <em>Si algo aprendí de todo esto es que lo bueno no se apura: se espera.</em></p>"+
           "<p>Gracias por decirme que sí en junio y por decírmelo otra vez en septiembre. Gracias por los días grandes y, sobre todo, por los comunes.</p>"+
           "<p><em>Te elegiría en cualquier calendario.</em></p>"+
           "<p class='rubrica'>Tu esposo, siempre</p>"
@@ -490,36 +531,59 @@
   var ultimoFoco = null;
   var vistas = {};
 
-  function impresion(f, alt){
-    var fig = document.createElement('figure');
-    fig.className = 'impresion';
-    if(f && f.src){
-      var img = document.createElement('img');
-      img.src = f.src; img.alt = alt || (f.pie || '');
-      img.loading = 'lazy'; img.decoding = 'async';
-      fig.appendChild(img);
-    }else{
-      var hueco = document.createElement('div');
-      hueco.className = 'hueco';
-      hueco.textContent = (f && f.texto) || 'Foto';
-      fig.appendChild(hueco);
-    }
-    var cap = document.createElement('figcaption');
-    cap.textContent = (f && f.pie) || '';
-    fig.appendChild(cap);
-    return fig;
-  }
-
   function galeria(d){
     var cont = document.getElementById('p-galeria');
     cont.innerHTML = '';
-    var lista = (d.fotos && d.fotos.length) ? d.fotos : [{texto:d.foto, pie:d.pie}];
-    cont.appendChild(impresion(lista[0], d.titulo));
+    var lista = d.fotos || [];
+
+    var fig = document.createElement('figure');
+    fig.className = 'impresion';
+    var principal = document.createElement('img');
+    principal.alt = d.titulo;
+    principal.decoding = 'async';
+    var cap = document.createElement('figcaption');
+    cap.textContent = d.pieFoto || '';
+
+    if(!lista.length){
+      var hueco = document.createElement('div');
+      hueco.className = 'hueco';
+      hueco.textContent = 'sin foto de ese día';
+      fig.appendChild(hueco);
+      fig.appendChild(cap);
+      cont.appendChild(fig);
+      return;
+    }
+
+    principal.src = lista[0];
+    fig.appendChild(principal);
+    fig.appendChild(cap);
+    cont.appendChild(fig);
+
     if(lista.length > 1){
-      var fila = document.createElement('div');
-      fila.className = 'secundarias';
-      for(var i=1;i<lista.length;i++) fila.appendChild(impresion(lista[i], d.titulo));
-      cont.appendChild(fila);
+      var tira = document.createElement('div');
+      tira.className = 'tira';
+      lista.forEach(function(src, i){
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'mini' + (i === 0 ? ' activa' : '');
+        b.setAttribute('aria-label', 'Ver foto ' + (i+1) + ' de ' + lista.length);
+        var im = document.createElement('img');
+        im.src = src; im.alt = ''; im.loading = 'lazy'; im.decoding = 'async';
+        b.appendChild(im);
+        b.addEventListener('click', function(){
+          principal.src = src;
+          var previas = tira.querySelectorAll('.mini.activa');
+          Array.prototype.forEach.call(previas, function(p){ p.classList.remove('activa'); });
+          b.classList.add('activa');
+        });
+        tira.appendChild(b);
+      });
+      cont.appendChild(tira);
+
+      var cuenta = document.createElement('p');
+      cuenta.className = 'cuenta-fotos';
+      cuenta.textContent = lista.length + ' fotos de ese día · tócalas';
+      cont.appendChild(cuenta);
     }
   }
 
@@ -880,7 +944,7 @@
   mundo.add(sueltos);
 
   /* ===================== CÁMARA ===================== */
-  var destino = esPhone ? 98 : 78;
+  var destino = esPhone ? 112 : 88;
   var obj = { yaw:0.6, pitch:0.38, dist:230 };
   var act = { yaw:obj.yaw, pitch:1.05, dist:260 };
   var arrastrando = false, ultX = 0, ultY = 0, movido = false, ultimoToque = 0;
@@ -903,7 +967,7 @@
     if(ids.length >= 2){
       var a = punteros[ids[0]], b = punteros[ids[1]];
       var d = Math.hypot(a.x-b.x, a.y-b.y);
-      if(pellizco) obj.dist = Math.max(22, Math.min(190, obj.dist*(pellizco/d)));
+      if(pellizco) obj.dist = Math.max(22, Math.min(220, obj.dist*(pellizco/d)));
       pellizco = d; return;
     }
     if(!arrastrando) return;
@@ -928,7 +992,7 @@
   cv.addEventListener('wheel', function(e){
     if(!abierto) return;
     e.preventDefault();
-    obj.dist = Math.max(22, Math.min(190, obj.dist + e.deltaY*0.07));
+    obj.dist = Math.max(22, Math.min(220, obj.dist + e.deltaY*0.07));
   }, {passive:false});
 
   var rayo = new THREE.Raycaster(), puntero = new THREE.Vector2(), hayPuntero = false;
@@ -966,7 +1030,7 @@
     renderer.setSize(w, h, false);
     camara.aspect = w/h; camara.updateProjectionMatrix();
     esPhone = w < 620;
-    destino = esPhone ? 98 : 78;
+    destino = esPhone ? 112 : 88;
   }
   window.addEventListener('resize', medidas);
   medidas();
