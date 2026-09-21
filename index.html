@@ -1,0 +1,1046 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<meta name="theme-color" content="#120810">
+<meta property="og:title" content="Universo Vania Valeria">
+<meta name="description" content="Un universo de flores rosadas.">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Universo Vania Valeria</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&family=Pinyon+Script&display=swap">
+<style>
+  :root{
+    --noche:#120810;
+    --ciruela:#1d0d19;
+    --rosa:#ff74b1;
+    --rosa-hondo:#c92a6e;
+    --rosa-claro:#ffc2de;
+    --nacar:#fbeef4;
+    --papel:#fdf4f1;
+    --tinta:#3b1c2b;
+    --tinta-suave:#7a5666;
+    --verde:#6f7d41;
+
+    --t-display:"Cormorant Garamond", Georgia, "Times New Roman", serif;
+    --t-mano:"Pinyon Script", "Cormorant Garamond", cursive;
+    --t-util:"Jost", "Segoe UI", system-ui, sans-serif;
+    color-scheme: dark;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;background:var(--noche);color:var(--nacar);
+    font-family:var(--t-util);font-weight:300;
+    overflow:hidden;-webkit-tap-highlight-color:transparent;
+  }
+  button{font:inherit;color:inherit}
+
+  /* ============ ESCENA ============ */
+  #cosmos{position:fixed;inset:0;display:block;touch-action:none;cursor:grab}
+  #cosmos.arrastrando{cursor:grabbing}
+  #cosmos.sobre-flor{cursor:pointer}
+
+  /* viñeta + grano: lo que convierte un render en una fotografía */
+  .atmosfera{
+    position:fixed;inset:0;z-index:1;pointer-events:none;
+    background:
+      radial-gradient(120% 82% at 50% 46%, transparent 38%, rgba(10,4,9,.55) 78%, rgba(8,3,7,.88) 100%);
+  }
+  .grano{
+    position:fixed;inset:-50%;z-index:1;pointer-events:none;opacity:.24;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='r'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/></filter><rect width='180' height='180' filter='url(%23r)' opacity='.55'/></svg>");
+  }
+  @media (prefers-reduced-motion:no-preference){
+    .grano{animation:tiembla 1.1s steps(3) infinite}
+    @keyframes tiembla{
+      0%{transform:translate(0,0)} 33%{transform:translate(-2%,1%)} 66%{transform:translate(1%,-2%)} 100%{transform:translate(0,0)}
+    }
+  }
+
+  /* ============ OBERTURA ============ */
+  .velo{
+    position:fixed;inset:0;z-index:9;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:0;text-align:center;
+    padding:32px 22px;
+    background:radial-gradient(90% 70% at 50% 42%, #24101f 0%, #120810 62%, #0b050a 100%);
+    transition:opacity 1.1s ease, visibility 1.1s;
+  }
+  .velo.fuera{opacity:0;visibility:hidden}
+  .velo .para{
+    font-family:var(--t-util);font-size:.6rem;font-weight:400;
+    letter-spacing:.46em;text-transform:uppercase;color:var(--rosa);
+    margin:0 0 26px;opacity:0;animation:surge 1.1s .25s ease-out forwards;
+  }
+  .velo .firma-nombre{
+    font-family:var(--t-mano);font-size:clamp(3.6rem,15vw,7rem);line-height:.9;
+    margin:0;color:var(--rosa-claro);font-weight:400;
+    text-shadow:0 0 60px rgba(255,116,177,.38);
+    opacity:0;animation:surge 1.4s .5s ease-out forwards;
+  }
+  .velo .sub{
+    font-family:var(--t-display);font-style:italic;font-size:clamp(1rem,4vw,1.24rem);
+    color:#e9cfdc;margin:18px 0 0;max-width:26ch;
+    opacity:0;animation:surge 1.4s .9s ease-out forwards;
+  }
+  .abrir{
+    margin-top:42px;background:none;cursor:pointer;
+    border:1px solid rgba(255,116,177,.42);
+    padding:15px 34px;border-radius:999px;
+    font-family:var(--t-util);font-size:.62rem;font-weight:400;
+    letter-spacing:.34em;text-transform:uppercase;color:var(--rosa-claro);
+    opacity:0;animation:surge 1.2s 1.35s ease-out forwards;
+    transition:background .35s ease, border-color .35s ease, color .35s ease;
+  }
+  .abrir:hover,.abrir:focus-visible{background:rgba(255,116,177,.14);border-color:var(--rosa);color:#fff}
+  @keyframes surge{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+  /* ============ HUD ============ */
+  .hud{
+    position:fixed;inset:0;z-index:4;pointer-events:none;
+    display:grid;grid-template-rows:auto 1fr auto;
+    padding:0 clamp(18px,5vw,44px);
+    padding-top:calc(30px + env(safe-area-inset-top,0px));
+    padding-bottom:calc(24px + env(safe-area-inset-bottom,0px));
+    opacity:0;transition:opacity 1.4s ease .5s;
+  }
+  .hud.dentro{opacity:1}
+  .scrim{position:fixed;left:0;right:0;z-index:3;pointer-events:none;height:30vh}
+  .scrim.arriba{top:0;background:linear-gradient(180deg, rgba(10,4,9,.82), transparent)}
+  .scrim.abajo{bottom:0;background:linear-gradient(0deg, rgba(10,4,9,.88), transparent)}
+
+  /* cabecera: asimétrica, no todo centrado */
+  .cabecera{display:flex;align-items:flex-start;justify-content:space-between;gap:20px}
+  .ocasion{
+    font-size:.56rem;font-weight:400;letter-spacing:.34em;text-transform:uppercase;
+    color:var(--rosa);margin:0;max-width:11ch;line-height:2.1;text-align:left;
+  }
+  .titulo{text-align:right}
+  .titulo .nombre{
+    font-family:var(--t-mano);font-weight:400;
+    font-size:clamp(2.6rem,9vw,4.6rem);line-height:.9;margin:0;
+    color:var(--rosa-claro);text-shadow:0 0 44px rgba(255,116,177,.4);
+  }
+  .titulo .apellido{
+    font-family:var(--t-display);font-size:clamp(.6rem,2.4vw,.74rem);
+    letter-spacing:.5em;text-transform:uppercase;color:#e3c6d5;margin:10px 0 0;
+    padding-right:.5em;
+  }
+
+  /* pie: cifras grabadas + índice de etapas */
+  .pie-hud{display:flex;flex-direction:column;align-items:center;gap:clamp(14px,3vh,24px)}
+  .cifras{display:flex;align-items:center;gap:clamp(22px,7vw,52px)}
+  .cifra-bloque{text-align:center}
+  .cifra{
+    display:block;font-family:var(--t-display);font-weight:300;
+    font-size:clamp(2.6rem,10vw,3.9rem);line-height:.9;color:var(--nacar);
+    font-variant-numeric:tabular-nums;letter-spacing:-.02em;
+  }
+  .cifra-bloque .etiqueta-cifra{
+    display:block;font-size:.52rem;font-weight:400;letter-spacing:.3em;text-transform:uppercase;
+    color:#d6b4c6;margin-top:12px;
+  }
+  .filete{width:34px;height:1px;background:rgba(255,194,222,.45);margin:10px auto 0}
+  .rombo{width:5px;height:5px;background:var(--rosa);transform:rotate(45deg);opacity:.8;flex:0 0 auto}
+
+  .indice{display:flex;gap:10px;pointer-events:auto;padding:0;margin:0;list-style:none}
+  .indice button{
+    background:none;border:0;padding:8px 4px;cursor:pointer;display:block;
+  }
+  .indice .punto{
+    display:block;width:9px;height:9px;border:1px solid rgba(255,194,222,.5);
+    transform:rotate(45deg);transition:background .4s ease, border-color .4s ease, transform .4s ease;
+  }
+  .indice button[aria-pressed="true"] .punto{background:var(--rosa);border-color:var(--rosa);transform:rotate(45deg) scale(1.25)}
+  .indice button:focus-visible .punto{outline:1px solid var(--rosa-claro);outline-offset:4px}
+
+  .pista{
+    font-size:.54rem;font-weight:300;letter-spacing:.26em;text-transform:uppercase;
+    color:#a98a9b;margin:0;text-align:center;
+  }
+  .pista b{color:var(--rosa-claro);font-weight:400}
+
+  .carta-cta{
+    pointer-events:auto;background:none;border:0;cursor:pointer;
+    font-family:var(--t-mano);font-size:1.7rem;color:var(--rosa-claro);
+    padding:2px 10px;line-height:1.1;text-shadow:0 0 26px rgba(255,116,177,.4);
+    transition:color .3s ease;
+  }
+  .carta-cta:hover{color:#fff}
+
+  /* ============ ETIQUETAS 3D ============ */
+  .etiqueta{
+    position:fixed;z-index:5;transform:translate(-50%,-50%);
+    pointer-events:auto;cursor:pointer;background:none;border:0;padding:10px 12px;
+    font-family:var(--t-display);font-style:italic;font-size:.92rem;letter-spacing:.02em;
+    color:var(--nacar);white-space:nowrap;text-shadow:0 2px 18px rgba(0,0,0,.9);
+    opacity:0;transition:opacity .4s ease, color .3s ease;
+  }
+  .etiqueta .anio{
+    display:block;font-family:var(--t-util);font-style:normal;
+    font-size:.5rem;font-weight:400;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--rosa);margin-top:5px;
+  }
+  .etiqueta::after{
+    content:"";display:block;width:0;height:1px;background:var(--rosa-claro);
+    margin:7px auto 0;transition:width .45s cubic-bezier(.2,.7,.3,1);
+  }
+  .etiqueta:hover::after,.etiqueta:focus-visible::after{width:100%}
+  .etiqueta:hover,.etiqueta:focus-visible{color:#fff}
+  .etiqueta:focus-visible{outline:none}
+
+  /* ============ CARTA EN PAPEL ============ */
+  .panel{
+    position:fixed;inset:0;z-index:8;display:flex;align-items:center;justify-content:center;
+    padding:clamp(16px,4vw,32px);
+    background:rgba(12,5,10,.78);backdrop-filter:blur(8px);
+    opacity:0;pointer-events:none;transition:opacity .5s ease;
+  }
+  .panel.abierto{opacity:1;pointer-events:auto}
+  .hoja{
+    position:relative;width:min(540px,100%);max-height:88vh;overflow-y:auto;
+    background:
+      radial-gradient(120% 60% at 20% 0%, #fffaf8 0%, transparent 60%),
+      linear-gradient(175deg, #fdf4f1 0%, #f7e7ec 100%);
+    color:var(--tinta);
+    padding:clamp(30px,6vw,46px) clamp(24px,5vw,44px) clamp(30px,5vw,40px);
+    box-shadow:0 34px 70px rgba(0,0,0,.6), 0 0 0 1px rgba(201,42,110,.14);
+    transform:translateY(20px) scale(.97) rotate(-.35deg);
+    transition:transform .6s cubic-bezier(.16,.84,.34,1);
+  }
+  .panel.abierto .hoja{transform:rotate(-.35deg)}
+  .hoja::before{ /* cinta de washi rosa */
+    content:"";position:absolute;top:-11px;left:50%;width:108px;height:24px;
+    transform:translateX(-50%) rotate(-2.2deg);
+    background:repeating-linear-gradient(115deg, rgba(255,140,190,.62) 0 7px, rgba(255,180,212,.62) 7px 14px);
+    box-shadow:0 2px 6px rgba(0,0,0,.14);
+  }
+  .sello{
+    display:block;font-family:var(--t-util);font-size:.52rem;font-weight:400;
+    letter-spacing:.36em;text-transform:uppercase;color:var(--rosa-hondo);
+    text-align:center;margin:0 0 6px;
+  }
+  .hoja h2{
+    font-family:var(--t-display);font-weight:400;
+    font-size:clamp(1.6rem,6.4vw,2.35rem);line-height:1.12;
+    margin:10px 0 0;text-align:center;text-wrap:balance;color:#2f1522;
+  }
+  .filigrana{
+    display:flex;align-items:center;justify-content:center;gap:12px;margin:18px 0 26px;
+    color:var(--rosa-hondo);opacity:.6;
+  }
+  .filigrana span{height:1px;width:52px;background:currentColor}
+
+  .galeria{margin:0 0 28px}
+  .galeria .secundarias{
+    display:flex;justify-content:center;gap:14px;margin-top:22px;flex-wrap:wrap;
+  }
+  .galeria .secundarias .impresion{
+    width:min(146px,40%);margin:0;padding:7px 7px 26px;transform:rotate(-1.8deg);
+  }
+  .galeria .secundarias .impresion:nth-child(even){transform:rotate(2.2deg)}
+  .galeria .secundarias .impresion::before{width:38px;height:13px}
+  .galeria .secundarias figcaption{font-size:.95rem;bottom:7px}
+  .impresion{
+    position:relative;width:min(248px,68%);margin:0 auto;
+    background:#fff;padding:11px 11px 42px;
+    box-shadow:0 14px 30px rgba(59,28,43,.22);
+    transform:rotate(1.4deg);
+  }
+  .impresion::before{ /* cinta de la foto */
+    content:"";position:absolute;top:-9px;left:50%;width:62px;height:19px;
+    transform:translateX(-50%) rotate(-3deg);
+    background:rgba(255,160,200,.55);
+  }
+  .impresion .hueco{
+    aspect-ratio:4/5;max-width:100%;
+    background:repeating-linear-gradient(45deg,#f7e3ec 0 9px,#f0d4e1 9px 18px);
+    display:flex;align-items:center;justify-content:center;padding:12px;
+    font-family:var(--t-util);font-size:.55rem;font-weight:400;letter-spacing:.2em;
+    text-transform:uppercase;text-align:center;color:#a8768d;
+  }
+  .impresion img{aspect-ratio:4/5;width:100%;object-fit:cover;display:block}
+  .impresion figcaption{
+    position:absolute;left:0;right:0;bottom:11px;text-align:center;
+    font-family:var(--t-mano);font-size:1.35rem;color:#6b3350;line-height:1;
+  }
+
+  .cuerpo{
+    font-family:var(--t-display);font-size:clamp(1.02rem,3.6vw,1.14rem);
+    line-height:1.78;max-width:40ch;margin:0 auto;color:#4a2436;text-align:left;
+  }
+  .cuerpo p+p{margin-top:15px}
+  .cuerpo p:first-child::first-letter{
+    font-size:2.9em;line-height:.82;float:left;padding:6px 10px 0 0;
+    color:var(--rosa-hondo);font-weight:400;
+  }
+  .cuerpo em{font-style:italic;color:var(--rosa-hondo)}
+  .rubrica{
+    font-family:var(--t-mano);font-size:1.85rem;color:var(--rosa-hondo);
+    text-align:right;margin-top:24px!important;
+  }
+  .rubrica::first-letter{font-size:1em;float:none;padding:0;color:inherit}
+
+  .cerrar{
+    display:block;margin:30px auto 0;background:none;cursor:pointer;
+    border:1px solid rgba(201,42,110,.32);border-radius:999px;
+    font-family:var(--t-util);font-size:.55rem;font-weight:400;
+    letter-spacing:.3em;text-transform:uppercase;color:var(--rosa-hondo);
+    padding:12px 26px;transition:background .3s ease;
+  }
+  .cerrar:hover{background:rgba(201,42,110,.08)}
+
+  @media (max-width:520px){
+    .cabecera{flex-direction:column;align-items:center;gap:10px}
+    .ocasion{max-width:none;text-align:center;line-height:1.8}
+    .titulo{text-align:center}
+    .titulo .apellido{padding-right:0}
+    .pista{font-size:.48rem;letter-spacing:.2em}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .velo .para,.velo .firma-nombre,.velo .sub,.abrir{animation:none;opacity:1}
+    .hoja,.panel,.hud,.etiqueta{transition:none}
+  }
+</style>
+</head>
+<body>
+
+<canvas id="cosmos"></canvas>
+<div class="atmosfera" aria-hidden="true"></div>
+<div class="grano" aria-hidden="true"></div>
+<div class="scrim arriba" aria-hidden="true"></div>
+<div class="scrim abajo" aria-hidden="true"></div>
+
+<!-- ============ OBERTURA ============ -->
+<section class="velo" id="velo">
+  <p class="para">Para mi esposa</p>
+  <h1 class="firma-nombre">Vania Valeria</h1>
+  <p class="sub">Hoy el mundo regala flores amarillas.<br>Yo te traje un universo, y es rosado.</p>
+  <button class="abrir" id="btn-abrir" type="button">Ábrelo</button>
+</section>
+
+<!-- ============ HUD ============ -->
+<div class="hud" id="hud">
+  <header class="cabecera">
+    <p class="ocasion">21 · IX Día de las flores</p>
+    <div class="titulo">
+      <p class="nombre">Vania Valeria</p>
+      <p class="apellido">Nina</p>
+    </div>
+  </header>
+
+  <div></div>
+
+  <footer class="pie-hud">
+    <section class="cifras" aria-label="Nuestros números">
+      <div class="cifra-bloque">
+        <span class="cifra" id="c-juntos">100</span>
+        <span class="filete" aria-hidden="true"></span>
+        <span class="etiqueta-cifra">Días juntos</span>
+      </div>
+      <span class="rombo" aria-hidden="true"></span>
+      <div class="cifra-bloque">
+        <span class="cifra" id="c-casados">17</span>
+        <span class="filete" aria-hidden="true"></span>
+        <span class="etiqueta-cifra">Días casados</span>
+      </div>
+    </section>
+
+    <ul class="indice" id="indice" aria-label="Nuestras etapas"></ul>
+
+    <button class="carta-cta" id="btn-carta" type="button">mi carta para ti</button>
+    <p class="pista"><b>Gira</b> el universo · <b>abre</b> las ocho flores</p>
+  </footer>
+</div>
+
+<!-- ============ CARTA ============ -->
+<div class="panel" id="panel" role="dialog" aria-modal="true" aria-labelledby="p-titulo">
+  <article class="hoja">
+    <p class="sello" id="p-fecha"></p>
+    <h2 id="p-titulo"></h2>
+    <p class="filigrana" aria-hidden="true"><span></span>✿<span></span></p>
+    <div class="galeria" id="p-galeria"></div>
+    <div class="cuerpo" id="p-texto"></div>
+    <button class="cerrar" id="p-cerrar" type="button">volver al universo</button>
+  </article>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  /* ===================== DATOS ===================== */
+  var INICIO = new Date(2026, 5, 13);
+  var BODA   = new Date(2026, 8, 4);
+  var DIA = 86400000;
+
+  var ETAPAS = [
+    {
+      etiqueta:"La semilla", anio:"13 · 06 · 2026",
+      fecha:"13 de junio de 2026 · la semilla",
+      titulo:"El día que dijimos que sí",
+      foto:"Foto de nuestros primeros días", pie:"donde empezó todo",
+      texto:"<p>Un 13 de junio dejaste de ser la persona que me gustaba para ser <em>mi persona</em>. No hubo flores ese día, Vania: hubo nervios, risas y la certeza tonta y hermosa de que esto iba en serio.</p>",
+      fotos:[{src:"fotos/01.jpg", pie:"la primera noche"}],
+      color:0xff3f92, radio:30, altura:6, escala:0.95
+    },
+    {
+      etiqueta:"El gimnasio", anio:"nuestra rutina",
+      fecha:"la segunda · el gimnasio",
+      titulo:"Ahí supe que contigo todo era juego",
+      foto:"Foto en el gimnasio", pie:"los dos en el espejo",
+      texto:"<p>Nos vimos en el espejo y ya no éramos dos personas conociéndose: éramos <em>un equipo</em>. Te cargué, nos reímos, y me quedé con esa foto porque ahí sales tal como eres conmigo.</p>",
+      fotos:[{src:"fotos/02.jpg", pie:"nuestro espejo"}],
+      color:0xff579f, radio:27, altura:-7, escala:0.95
+    },
+    {
+      etiqueta:"El tatuaje", anio:"la tercera",
+      fecha:"la tercera · antes del tatuaje",
+      titulo:"Te llevé en la piel antes que en el papel",
+      foto:"Foto antes del tatuaje", pie:"una flor en tu pelo",
+      texto:"<p>Ese día te pusiste una flor en el pelo sin saber que años después yo te iba a regalar un universo entero de ellas.</p><p>Nos marcamos la piel, Vania. <em>Lo que se tatúa no se borra, y lo que siento tampoco.</em></p>",
+      fotos:[{src:"fotos/03.jpg", pie:"la flor en tu pelo"},{src:"fotos/03b.jpg", pie:"tinta"}],
+      color:0xff6cab, radio:24, altura:9, escala:1.0
+    },
+    {
+      etiqueta:"Las rosas", anio:"la cuarta",
+      fecha:"la cuarta · el ramo",
+      titulo:"Un corazón hecho con las manos",
+      foto:"Foto del ramo", pie:"flores y un corazón",
+      texto:"<p>Hicimos un corazón con las manos sobre un ramo de rosas, como si quisiéramos firmar el momento. Yo ya sabía lo que estaba firmando.</p><p><em>Desde entonces, cada flor que veo me acuerda de ti.</em></p>",
+      fotos:[{src:"fotos/04.jpg", pie:"nuestro corazón"},{src:"fotos/04b.jpg", pie:"ese beso"}],
+      color:0xff84b9, radio:21, altura:-4, escala:1.0
+    },
+    {
+      etiqueta:"El sol", anio:"la quinta",
+      fecha:"la quinta · un día de sol",
+      titulo:"Los días comunes, que son los que cuentan",
+      foto:"Foto de un día de sol", pie:"un martes cualquiera",
+      texto:"<p>Sin ocasión, sin fecha especial: solo sol, caminar y tú a mi costado. Los días grandes se celebran, pero yo me enamoré en los días comunes.</p><p><em>Contigo hasta lo normal se siente bonito.</em></p>",
+      fotos:[{src:"fotos/05.jpg", pie:"solo nosotros"}],
+      color:0xff9cc6, radio:18.5, altura:7, escala:1.0
+    },
+    {
+      etiqueta:"Camino a ti", anio:"la sexta",
+      fecha:"la sexta · en camino",
+      titulo:"Siempre terminábamos yendo al mismo lugar",
+      foto:"Foto de camino", pie:"siempre juntos",
+      texto:"<p>No importaba a dónde: bastaba que fuéramos los dos. Hay gente que hace planes; nosotros solo necesitábamos estar en el mismo sitio.</p><p><em>Y todos esos caminos iban, sin saberlo, hacia septiembre.</em></p>",
+      fotos:[{src:"fotos/06.jpg", pie:"en camino"}],
+      color:0xffb0d1, radio:16, altura:-9, escala:1.05
+    },
+    {
+      etiqueta:"La boda", anio:"04 · 09 · 2026",
+      fecha:"4 de septiembre de 2026 · la flor",
+      titulo:"Te dije “para siempre” en voz alta",
+      foto:"Foto de nuestra boda", pie:"4 · 09 · 2026",
+      texto:"<p>Ese día firmamos lo que ya sabía mi corazón desde junio. Te vi de blanco, con tu ramo, y entendí que la palabra <em>esposa</em> iba a ser mi palabra favorita del idioma.</p><p>Firmamos un papel delante de todos, pero lo nuestro ya estaba firmado desde el 13 de junio.</p>",
+      fotos:[{src:"fotos/07.jpg", pie:"señor y señora"},{src:"fotos/07b.jpg", pie:"el sí"},{src:"fotos/07c.jpg", pie:"los anillos"}],
+      color:0xffc8e0, radio:12.5, altura:2, escala:1.45
+    },
+    {
+      etiqueta:"Hoy", anio:"21 · 09 · 2026",
+      fecha:"21 de septiembre de 2026 · hoy",
+      titulo:"Cien días exactos, y recién empezamos",
+      foto:"Foto de nosotros hoy", pie:"día de las flores",
+      fotos:[{src:"fotos/08.jpg", pie:"hoy"},{src:"fotos/08b.jpg", pie:"nuestros colores"}],
+      texto:"<p>Mira la coincidencia: hoy, día de las flores, se cumplen <em>exactamente cien días</em> desde el 13 de junio. Cien juntos, diecisiete de casados y una primavera entera por delante.</p><p>Si el mundo entero regala amarillo, yo te lo pinto <em>rosado</em>, porque a ti te gusta así. Estas flores se van a marchitar; lo que siento por ti no tiene esa costumbre.</p>",
+      color:0xffe0ee, radio:9.5, altura:-2, escala:1.25
+    }
+  ];
+
+  var CARTA = {
+    fecha:"para Vania Valeria Nina",
+    titulo:"Mi carta de flores rosadas",
+    foto:"Foto favorita de los dos", pie:"nosotros",
+    fotos:[{src:"fotos/07b.jpg", pie:"para siempre"}],
+    texto:"<p>Hoy toca regalar flores amarillas: las del inicio, las de la suerte, las de la primavera. Yo te las doy <em>rosadas</em>, porque el rosado es tuyo y porque lo mío contigo nunca fue seguir la costumbre.</p>"+
+          "<p>Gracias por decirme que sí en junio y por decírmelo otra vez en septiembre. Gracias por los días grandes y, sobre todo, por los comunes.</p>"+
+          "<p><em>Te elegiría en cualquier calendario.</em></p>"+
+          "<p class='rubrica'>Tu esposo, siempre</p>"
+  };
+
+  /* ===================== CIFRAS ===================== */
+  function dias(desde){
+    var hoy = new Date();
+    var a = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+    return Math.max(0, Math.round((a - desde) / DIA));
+  }
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function pinta(id, n, retardo){
+    var el = document.getElementById(id);
+    if(!el) return;
+    if(reduce){ el.textContent = n; return; }
+    setTimeout(function(){
+      var paso = 0, total = 34;
+      var t = setInterval(function(){
+        paso++;
+        var k = 1 - Math.pow(1 - paso/total, 3);
+        el.textContent = Math.round(n * k);
+        if(paso >= total){ el.textContent = n; clearInterval(t); }
+      }, 26);
+    }, retardo);
+  }
+
+  /* ===================== CARTA ===================== */
+  var panel = document.getElementById('panel');
+  var hoja = panel.querySelector('.hoja');
+  var ultimoFoco = null;
+  var vistas = {};
+
+  function impresion(f, alt){
+    var fig = document.createElement('figure');
+    fig.className = 'impresion';
+    if(f && f.src){
+      var img = document.createElement('img');
+      img.src = f.src; img.alt = alt || (f.pie || '');
+      img.loading = 'lazy'; img.decoding = 'async';
+      fig.appendChild(img);
+    }else{
+      var hueco = document.createElement('div');
+      hueco.className = 'hueco';
+      hueco.textContent = (f && f.texto) || 'Foto';
+      fig.appendChild(hueco);
+    }
+    var cap = document.createElement('figcaption');
+    cap.textContent = (f && f.pie) || '';
+    fig.appendChild(cap);
+    return fig;
+  }
+
+  function galeria(d){
+    var cont = document.getElementById('p-galeria');
+    cont.innerHTML = '';
+    var lista = (d.fotos && d.fotos.length) ? d.fotos : [{texto:d.foto, pie:d.pie}];
+    cont.appendChild(impresion(lista[0], d.titulo));
+    if(lista.length > 1){
+      var fila = document.createElement('div');
+      fila.className = 'secundarias';
+      for(var i=1;i<lista.length;i++) fila.appendChild(impresion(lista[i], d.titulo));
+      cont.appendChild(fila);
+    }
+  }
+
+  function abrir(d, indice){
+    document.getElementById('p-fecha').textContent = d.fecha;
+    document.getElementById('p-titulo').textContent = d.titulo;
+    galeria(d);
+    document.getElementById('p-texto').innerHTML = d.texto;
+    hoja.scrollTop = 0;
+    panel.classList.add('abierto');
+    document.getElementById('p-cerrar').focus();
+    if(indice !== undefined){
+      vistas[indice] = true;
+      var b = document.querySelector('.indice button[data-i="'+indice+'"]');
+      if(b) b.setAttribute('aria-pressed','true');
+    }
+  }
+  function cerrar(){
+    panel.classList.remove('abierto');
+    if(ultimoFoco && ultimoFoco.focus) ultimoFoco.focus();
+  }
+  document.getElementById('p-cerrar').addEventListener('click', cerrar);
+  panel.addEventListener('click', function(e){ if(e.target === panel) cerrar(); });
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && panel.classList.contains('abierto')) cerrar(); });
+  document.getElementById('btn-carta').addEventListener('click', function(e){
+    ultimoFoco = e.currentTarget; abrir(CARTA);
+  });
+
+  /* índice de etapas */
+  var indice = document.getElementById('indice');
+  ETAPAS.forEach(function(e, i){
+    var li = document.createElement('li');
+    var b = document.createElement('button');
+    b.type = 'button'; b.dataset.i = i;
+    b.setAttribute('aria-pressed','false');
+    b.setAttribute('aria-label', e.etiqueta + ' — ' + e.anio);
+    b.innerHTML = '<span class="punto"></span>';
+    b.addEventListener('click', function(ev){ ultimoFoco = ev.currentTarget; abrir(e, i); });
+    li.appendChild(b); indice.appendChild(li);
+  });
+
+  /* ===================== 3D ===================== */
+  var cv = document.getElementById('cosmos');
+  if(!window.THREE){ cv.style.display = 'none'; return; }
+  var renderer;
+  try{ renderer = new THREE.WebGLRenderer({canvas:cv, antialias:true, alpha:false}); }
+  catch(err){ cv.style.display='none'; return; }
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setClearColor(0x120810, 1);
+  if('outputEncoding' in renderer && THREE.sRGBEncoding) renderer.outputEncoding = THREE.sRGBEncoding;
+  if(THREE.ACESFilmicToneMapping){ renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.15; }
+
+  var escena = new THREE.Scene();
+  escena.fog = new THREE.FogExp2(0x120810, 0.011);
+  var camara = new THREE.PerspectiveCamera(50, 1, 0.1, 500);
+  var mundo = new THREE.Group();
+  escena.add(mundo);
+
+  escena.add(new THREE.HemisphereLight(0xffe2f0, 0x2a1020, 0.5));
+  var solcito = new THREE.PointLight(0xffb6d8, 2.0, 200, 1.8);
+  escena.add(solcito);
+  var clave = new THREE.DirectionalLight(0xfff2f8, 1.1);
+  clave.position.set(4, 6, 3); escena.add(clave);
+  var contra = new THREE.DirectionalLight(0xff4f9e, 0.95);
+  contra.position.set(-5, -2, -4); escena.add(contra);
+
+  /* --- textura del polvo de flores --- */
+  function texturaFlor(){
+    var c = document.createElement('canvas'); c.width = c.height = 128;
+    var g = c.getContext('2d'); g.translate(64,64);
+    for(var i=0;i<8;i++){
+      g.save(); g.rotate(i*Math.PI/4);
+      var grad = g.createLinearGradient(0,-10,0,-52);
+      grad.addColorStop(0,'rgba(255,205,230,1)');
+      grad.addColorStop(1,'rgba(255,90,160,.28)');
+      g.fillStyle = grad;
+      g.beginPath(); g.ellipse(0,-32,11,26,0,0,Math.PI*2); g.fill();
+      g.restore();
+    }
+    g.fillStyle = '#9a6a12';
+    g.beginPath(); g.arc(0,0,15,0,Math.PI*2); g.fill();
+    g.strokeStyle = 'rgba(255,224,240,.9)'; g.lineWidth = 2;
+    g.beginPath(); g.arc(0,0,15,0,Math.PI*2); g.stroke();
+    var t = new THREE.CanvasTexture(c); t.needsUpdate = true; return t;
+  }
+
+  var esPhone = window.innerWidth < 620;
+  var N = esPhone ? 420 : 900;
+  var pos = new Float32Array(N*3), tam = new Float32Array(N);
+  for(var i=0;i<N;i++){
+    var r = 12 + Math.pow(Math.random(), .55) * 78;
+    var th = Math.random()*Math.PI*2, ph = Math.acos(2*Math.random()-1);
+    pos[i*3] = r*Math.sin(ph)*Math.cos(th);
+    pos[i*3+1] = r*Math.cos(ph)*0.42;
+    pos[i*3+2] = r*Math.sin(ph)*Math.sin(th);
+    tam[i] = 1.4 + Math.random()*3.6;
+  }
+  var geoPolvo = new THREE.BufferGeometry();
+  geoPolvo.setAttribute('position', new THREE.BufferAttribute(pos,3));
+  geoPolvo.setAttribute('size', new THREE.BufferAttribute(tam,1));
+  var matPolvo = new THREE.ShaderMaterial({
+    uniforms:{ mapa:{value:texturaFlor()}, tiempo:{value:0} },
+    transparent:true, depthWrite:false, blending:THREE.AdditiveBlending,
+    vertexShader:
+      "attribute float size; uniform float tiempo; varying float vBrillo;"+
+      "void main(){ vec3 p = position;"+
+      " p.y += sin(tiempo*0.5 + p.x*0.07)*0.9;"+
+      " vec4 mv = modelViewMatrix * vec4(p,1.0);"+
+      " vBrillo = 0.55 + 0.45*sin(tiempo*1.3 + p.z*0.25);"+
+      " gl_PointSize = size * (320.0 / -mv.z);"+
+      " gl_Position = projectionMatrix * mv; }",
+    fragmentShader:
+      "uniform sampler2D mapa; varying float vBrillo;"+
+      "void main(){ vec4 c = texture2D(mapa, gl_PointCoord);"+
+      " if(c.a < 0.04) discard;"+
+      " gl_FragColor = vec4(c.rgb * (0.85 + vBrillo*0.5), c.a * (0.5 + vBrillo*0.45)); }"
+  });
+  mundo.add(new THREE.Points(geoPolvo, matPolvo));
+
+  var nucleo = new THREE.Mesh(new THREE.SphereGeometry(3.1, 32, 32), new THREE.MeshBasicMaterial({color:0xffc0dd}));
+  mundo.add(nucleo);
+  var halo = new THREE.Mesh(new THREE.SphereGeometry(6.4, 32, 32),
+    new THREE.MeshBasicMaterial({color:0xff74b1, transparent:true, opacity:.14, side:THREE.BackSide}));
+  mundo.add(halo);
+
+  ETAPAS.forEach(function(e){
+    var anillo = new THREE.Mesh(
+      new THREE.RingGeometry(e.radio-0.05, e.radio+0.05, 160),
+      new THREE.MeshBasicMaterial({color:0x8a4f6e, transparent:true, opacity:.3, side:THREE.DoubleSide})
+    );
+    anillo.rotation.x = Math.PI/2; anillo.position.y = e.altura;
+    mundo.add(anillo);
+  });
+
+  /* --- pétalo paramétrico --- */
+  function geometriaPetalo(largo, ancho, caida, acopado, giro){
+    var NU = 16, NV = 9, verts = [], nors = [], uvs = [], idx = [];
+    function punto(u, v){
+      var perfil = Math.pow(Math.sin(Math.PI * Math.pow(u, 0.62)), 0.85);
+      var an = ancho * perfil * (1 - 0.18*u);
+      var tw = giro * u, x = v * an, z = u * largo;
+      var y = -caida * u * u - acopado * (v*v) * perfil;
+      return [x*Math.cos(tw) - y*Math.sin(tw), x*Math.sin(tw) + y*Math.cos(tw), z];
+    }
+    for(var i=0;i<=NU;i++){
+      for(var j=0;j<=NV;j++){
+        var u = i/NU, v = (j/NV)*2 - 1, p = punto(u, v);
+        verts.push(p[0], p[1], p[2]);
+        var pu = punto(Math.min(1,u+0.01), v), pv = punto(u, Math.min(1,v+0.02));
+        var a = [pu[0]-p[0], pu[1]-p[1], pu[2]-p[2]], b = [pv[0]-p[0], pv[1]-p[1], pv[2]-p[2]];
+        var n = [a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0]];
+        var L = Math.hypot(n[0],n[1],n[2]) || 1;
+        nors.push(n[0]/L, n[1]/L, n[2]/L);
+        uvs.push((v+1)/2, u);
+      }
+    }
+    for(var i2=0;i2<NU;i2++) for(var j2=0;j2<NV;j2++){
+      var a1 = i2*(NV+1)+j2, b1 = a1+1, c1 = a1+(NV+1), d1 = c1+1;
+      idx.push(a1,c1,b1, b1,c1,d1);
+    }
+    var g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(verts,3));
+    g.setAttribute('normal', new THREE.Float32BufferAttribute(nors,3));
+    g.setAttribute('uv', new THREE.Float32BufferAttribute(uvs,2));
+    g.setIndex(idx); return g;
+  }
+
+  function texturaPetalo(){
+    var c = document.createElement('canvas'); c.width = 128; c.height = 256;
+    var g = c.getContext('2d');
+    var grad = g.createLinearGradient(0,256,0,0);
+    grad.addColorStop(0,   '#7e1642');
+    grad.addColorStop(0.16,'#d93f83');
+    grad.addColorStop(0.45,'#ff8cc0');
+    grad.addColorStop(0.82,'#ffd2e8');
+    grad.addColorStop(1,   '#fff6fa');
+    g.fillStyle = grad; g.fillRect(0,0,128,256);
+    g.strokeStyle = 'rgba(140,20,72,.18)';
+    for(var i=0;i<11;i++){
+      g.lineWidth = i===5 ? 2.2 : 1;
+      g.beginPath(); g.moveTo(64,256);
+      g.quadraticCurveTo(64 + (i-5)*7, 130, 64 + (i-5)*13, 6); g.stroke();
+    }
+    g.fillStyle = 'rgba(255,255,255,.07)';
+    for(var k=0;k<260;k++) g.fillRect(Math.random()*128, Math.random()*256, 1, 1+Math.random()*3);
+    var t = new THREE.CanvasTexture(c);
+    if(THREE.sRGBEncoding) t.encoding = THREE.sRGBEncoding;
+    t.anisotropy = 4; return t;
+  }
+  var mapaPetalo = texturaPetalo();
+
+  var geoTallo = new THREE.CylinderGeometry(0.055, 0.085, 2.6, 10, 3);
+  var matTallo = new THREE.MeshStandardMaterial({color:0x5e6c34, roughness:.92});
+  var matHoja  = new THREE.MeshStandardMaterial({color:0x6c7c3c, roughness:.88, side:THREE.DoubleSide});
+  var geoHoja  = geometriaPetalo(1.5, 0.52, 0.18, 0.1, 0.25);
+  var matFloreta = new THREE.MeshStandardMaterial({color:0x6b4310, roughness:.95});
+  var geoFloreta = new THREE.SphereGeometry(1, 8, 6);
+  var matSepalo  = new THREE.MeshStandardMaterial({color:0x76853f, roughness:.9, side:THREE.DoubleSide});
+  var geoSepalo  = geometriaPetalo(0.7, 0.3, 0.3, 0.12, 0);
+
+  var CAPAS = [
+    {n:13, largo:2.35, ancho:0.40, incl:0.30, caida:0.42, acopado:0.55, giro:0.16, s:1.00},
+    {n:13, largo:2.05, ancho:0.36, incl:0.62, caida:0.34, acopado:0.60, giro:-0.20, s:0.92},
+    {n:9,  largo:1.55, ancho:0.30, incl:0.98, caida:0.26, acopado:0.55, giro:0.22, s:0.86}
+  ];
+  var geoCapas = CAPAS.map(function(c){ return geometriaPetalo(c.largo, c.ancho, c.caida, c.acopado, c.giro); });
+
+  /* une varias geometrías ya colocadas en una sola */
+  function fusionar(geos){
+    var np = 0, ni = 0, i;
+    for(i=0;i<geos.length;i++){
+      np += geos[i].attributes.position.count;
+      ni += geos[i].index.count;
+    }
+    var P = new Float32Array(np*3), N = new Float32Array(np*3), U = new Float32Array(np*2);
+    var I = (np > 65535) ? new Uint32Array(ni) : new Uint16Array(ni);
+    var op = 0, ou = 0, oi = 0, base = 0;
+    for(i=0;i<geos.length;i++){
+      var g = geos[i];
+      P.set(g.attributes.position.array, op);
+      N.set(g.attributes.normal.array, op);
+      U.set(g.attributes.uv.array, ou);
+      var idx = g.index.array;
+      for(var k=0;k<idx.length;k++) I[oi+k] = idx[k] + base;
+      base += g.attributes.position.count;
+      op += g.attributes.position.array.length;
+      ou += g.attributes.uv.array.length;
+      oi += idx.length;
+    }
+    var out = new THREE.BufferGeometry();
+    out.setAttribute('position', new THREE.BufferAttribute(P,3));
+    out.setAttribute('normal', new THREE.BufferAttribute(N,3));
+    out.setAttribute('uv', new THREE.BufferAttribute(U,2));
+    out.setIndex(new THREE.BufferAttribute(I,1));
+    return out;
+  }
+
+  function hazFlor(color, escala){
+    var g = new THREE.Group();
+    var tinte = new THREE.Color(color);
+    var matPetalo = new THREE.MeshStandardMaterial({
+      map: mapaPetalo, color: tinte, roughness:.58, metalness:0,
+      side:THREE.DoubleSide, emissive: tinte.clone().multiplyScalar(.10)
+    });
+    g.userData.matPetalo = matPetalo;
+    g.userData.tinte = tinte;
+
+    /* Los 35 pétalos se funden en una sola malla: el mismo detalle,
+       una sola llamada de dibujo, para que vuele en el celular. */
+    var piezas = [], eu = new THREE.Euler(), mat4 = new THREE.Matrix4();
+    var qq = new THREE.Quaternion(), vv = new THREE.Vector3(), ss = new THREE.Vector3();
+    CAPAS.forEach(function(capa, ci){
+      for(var k=0;k<capa.n;k++){
+        var jit = (Math.sin(k*12.9898 + ci*78.233) * 43758.5453) % 1;
+        jit = jit - Math.floor(jit);
+        eu.set(capa.incl + (jit-0.5)*0.18,
+               (k/capa.n)*Math.PI*2 + ci*0.42 + (jit-0.5)*0.12,
+               (jit-0.5)*0.22, 'YXZ');
+        qq.setFromEuler(eu);
+        vv.set(0, -ci*0.045, 0);
+        var e = capa.s * (0.9 + jit*0.2);
+        ss.set(e, e, e);
+        mat4.compose(vv, qq, ss);
+        piezas.push(geoCapas[ci].clone().applyMatrix4(mat4));
+      }
+    });
+    g.add(new THREE.Mesh(fusionar(piezas), matPetalo));
+
+    var NF = 150, phi = Math.PI * (3 - Math.sqrt(5));
+    var disco = new THREE.InstancedMesh(geoFloreta, matFloreta, NF);
+    var m = new THREE.Matrix4(), q = new THREE.Quaternion();
+    var v = new THREE.Vector3(), esc = new THREE.Vector3();
+    var cFuera = new THREE.Color(0x7d5116), cDentro = new THREE.Color(0x4a2d08), cc = new THREE.Color();
+    for(var f=0; f<NF; f++){
+      var tt = f/NF, rr = 0.62*Math.sqrt(tt), aa = f*phi;
+      v.set(Math.cos(aa)*rr, 0.13*(1 - tt*tt), Math.sin(aa)*rr);
+      var r0 = 0.055 + tt*0.045;
+      esc.set(r0, r0*0.72, r0);
+      m.compose(v, q, esc); disco.setMatrixAt(f, m);
+      cc.copy(cDentro).lerp(cFuera, Math.pow(tt,.7)); disco.setColorAt(f, cc);
+    }
+    disco.rotation.x = -Math.PI/2;
+    disco.instanceMatrix.needsUpdate = true;
+    if(disco.instanceColor) disco.instanceColor.needsUpdate = true;
+    g.add(disco);
+
+    var cojin = new THREE.Mesh(
+      new THREE.SphereGeometry(0.60, 24, 16, 0, Math.PI*2, 0, Math.PI/2),
+      new THREE.MeshStandardMaterial({color:0x5a3a0c, roughness:.95})
+    );
+    cojin.scale.y = 0.34; cojin.rotation.x = -Math.PI/2; cojin.position.y = -0.02;
+    g.add(cojin);
+
+    var sep = [];
+    for(var sp=0; sp<10; sp++){
+      eu.set(-0.5, (sp/10)*Math.PI*2 + 0.2, 0, 'YXZ');
+      qq.setFromEuler(eu); vv.set(0,-0.12,0); ss.set(1,1,1);
+      mat4.compose(vv, qq, ss);
+      sep.push(geoSepalo.clone().applyMatrix4(mat4));
+    }
+    g.add(new THREE.Mesh(fusionar(sep), matSepalo));
+
+    var tallo = new THREE.Mesh(geoTallo, matTallo);
+    tallo.position.y = -1.55; tallo.rotation.z = 0.05; g.add(tallo);
+
+    [0,1].forEach(function(li){
+      var h = new THREE.Mesh(geoHoja, matHoja);
+      h.rotation.order = 'YXZ';
+      h.position.set(0, -1.15 - li*0.62, 0);
+      h.rotation.y = li ? Math.PI*0.82 : Math.PI*0.12;
+      h.rotation.x = -0.35 - li*0.2;
+      h.scale.setScalar(0.95 - li*0.12);
+      g.add(h);
+    });
+
+    g.scale.setScalar(escala);
+    return g;
+  }
+
+  var heroes = [];
+  ETAPAS.forEach(function(e, idx){
+    var cont = new THREE.Group();
+    var flor = hazFlor(e.color, 1.9 * e.escala);
+    cont.add(flor);
+    cont.add(new THREE.PointLight(e.color, 1.4, 26));
+    var golpe = new THREE.Mesh(new THREE.SphereGeometry(4.4*e.escala, 10, 8), new THREE.MeshBasicMaterial({visible:false}));
+    golpe.userData.idx = idx; cont.add(golpe);
+    mundo.add(cont);
+
+    var btn = document.createElement('button');
+    btn.className = 'etiqueta'; btn.type = 'button';
+    btn.innerHTML = e.etiqueta + '<span class="anio">' + e.anio + '</span>';
+    btn.addEventListener('click', function(ev){ ultimoFoco = ev.currentTarget; abrir(e, idx); });
+    document.body.appendChild(btn);
+
+    heroes.push({
+      cont:cont, flor:flor, golpe:golpe, btn:btn, datos:e, idx:idx,
+      ang: idx*(Math.PI*2/ETAPAS.length) + 0.4,
+      vel: 0.055/(0.6 + idx*0.28),
+      radio:e.radio, altura:e.altura, base:1.9*e.escala, brillo:0
+    });
+  });
+
+  var sueltos = new THREE.Group();
+  var matSuelto = new THREE.MeshStandardMaterial({
+    map:mapaPetalo, color:0xffc2de, roughness:.6, side:THREE.DoubleSide,
+    transparent:true, opacity:.9, emissive:0x3a0a1e
+  });
+  var geoSuelto = geometriaPetalo(1.0, 0.24, 0.3, 0.3, 0.5);
+  geoSuelto.translate(0, 0, -0.5);
+  for(var s=0;s<(esPhone?26:48);s++){
+    var pet = new THREE.Mesh(geoSuelto, matSuelto);
+    pet.position.set((Math.random()-.5)*54, (Math.random()-.5)*34, (Math.random()-.5)*54);
+    pet.userData.giro = (Math.random()-.5)*0.02;
+    pet.userData.sube = 0.02 + Math.random()*0.05;
+    sueltos.add(pet);
+  }
+  mundo.add(sueltos);
+
+  /* ===================== CÁMARA ===================== */
+  var destino = esPhone ? 98 : 78;
+  var obj = { yaw:0.6, pitch:0.38, dist:230 };
+  var act = { yaw:obj.yaw, pitch:1.05, dist:260 };
+  var arrastrando = false, ultX = 0, ultY = 0, movido = false, ultimoToque = 0;
+  var punteros = {}, pellizco = 0, abierto = false;
+
+  function abajo(e){
+    if(!abierto) return;
+    punteros[e.pointerId] = {x:e.clientX, y:e.clientY};
+    arrastrando = true; movido = false;
+    ultX = e.clientX; ultY = e.clientY;
+    cv.classList.add('arrastrando');
+    if(cv.setPointerCapture) cv.setPointerCapture(e.pointerId);
+  }
+  function mueve(e){
+    puntero.x = (e.clientX / window.innerWidth)*2 - 1;
+    puntero.y = -(e.clientY / window.innerHeight)*2 + 1;
+    hayPuntero = true;
+    if(punteros[e.pointerId]) punteros[e.pointerId] = {x:e.clientX, y:e.clientY};
+    var ids = Object.keys(punteros);
+    if(ids.length >= 2){
+      var a = punteros[ids[0]], b = punteros[ids[1]];
+      var d = Math.hypot(a.x-b.x, a.y-b.y);
+      if(pellizco) obj.dist = Math.max(22, Math.min(190, obj.dist*(pellizco/d)));
+      pellizco = d; return;
+    }
+    if(!arrastrando) return;
+    var dx = e.clientX - ultX, dy = e.clientY - ultY;
+    if(Math.abs(dx) + Math.abs(dy) > 4) movido = true;
+    obj.yaw -= dx*0.005;
+    obj.pitch = Math.max(-1.1, Math.min(1.1, obj.pitch + dy*0.004));
+    ultX = e.clientX; ultY = e.clientY;
+  }
+  function arriba(e){
+    delete punteros[e.pointerId];
+    if(Object.keys(punteros).length < 2) pellizco = 0;
+    arrastrando = false;
+    cv.classList.remove('arrastrando');
+    if(!movido && abierto) clic(e);
+    ultimoToque = performance.now();
+  }
+  cv.addEventListener('pointerdown', abajo);
+  window.addEventListener('pointermove', mueve);
+  cv.addEventListener('pointerup', arriba);
+  cv.addEventListener('pointercancel', arriba);
+  cv.addEventListener('wheel', function(e){
+    if(!abierto) return;
+    e.preventDefault();
+    obj.dist = Math.max(22, Math.min(190, obj.dist + e.deltaY*0.07));
+  }, {passive:false});
+
+  var rayo = new THREE.Raycaster(), puntero = new THREE.Vector2(), hayPuntero = false;
+  function clic(e){
+    var r = cv.getBoundingClientRect();
+    puntero.x = ((e.clientX - r.left)/r.width)*2 - 1;
+    puntero.y = -((e.clientY - r.top)/r.height)*2 + 1;
+    rayo.setFromCamera(puntero, camara);
+    var golpes = rayo.intersectObjects(heroes.map(function(h){return h.golpe;}), false);
+    if(golpes.length){
+      var h = heroes[golpes[0].object.userData.idx];
+      ultimoFoco = h.btn; abrir(h.datos, h.idx);
+    }
+  }
+
+  /* ===================== OBERTURA ===================== */
+  var velo = document.getElementById('velo');
+  document.getElementById('btn-abrir').addEventListener('click', function(){
+    velo.classList.add('fuera');
+    abierto = true;
+    obj.dist = destino;
+    document.getElementById('hud').classList.add('dentro');
+    pinta('c-juntos', dias(INICIO), 900);
+    pinta('c-casados', dias(BODA), 1250);
+    ultimoToque = performance.now() - 4000;
+    setTimeout(function(){ velo.style.display = 'none'; }, 1300);
+  });
+
+  /* ===================== BUCLE ===================== */
+  var vTmp = new THREE.Vector3(), dirTmp = new THREE.Vector3();
+  var t0 = performance.now();
+
+  function medidas(){
+    var w = window.innerWidth, h = window.innerHeight;
+    renderer.setSize(w, h, false);
+    camara.aspect = w/h; camara.updateProjectionMatrix();
+    esPhone = w < 620;
+    destino = esPhone ? 98 : 78;
+  }
+  window.addEventListener('resize', medidas);
+  medidas();
+
+  function bucle(ahora){
+    var t = (ahora - t0)/1000;
+    var dt = Math.min(0.05, (ahora - (bucle.prev || ahora))/1000);
+    bucle.prev = ahora;
+
+    if(abierto && !arrastrando && !reduce && ahora - ultimoToque > 2600) obj.yaw += dt*0.045;
+
+    var suave = abierto ? 0.045 : 0.02;
+    act.yaw   += (obj.yaw   - act.yaw)   * (arrastrando ? 0.12 : suave*2);
+    act.pitch += (obj.pitch - act.pitch) * suave;
+    act.dist  += (obj.dist  - act.dist)  * suave;
+
+    var cp = Math.cos(act.pitch);
+    camara.position.set(Math.sin(act.yaw)*cp*act.dist, Math.sin(act.pitch)*act.dist, Math.cos(act.yaw)*cp*act.dist);
+    camara.lookAt(0,0,0);
+
+    solcito.position.copy(camara.position).multiplyScalar(0.35);
+    matPolvo.uniforms.tiempo.value = t;
+    nucleo.scale.setScalar(1 + Math.sin(t*1.7)*0.06);
+    halo.scale.setScalar(1 + Math.sin(t*1.1)*0.09);
+
+    sueltos.children.forEach(function(p){
+      p.rotation.z += p.userData.giro;
+      p.rotation.x += p.userData.giro*0.6;
+      p.rotation.y += p.userData.giro*0.4;
+      p.position.y += p.userData.sube;
+      if(p.position.y > 20) p.position.y = -20;
+    });
+
+    /* qué flor está bajo el cursor */
+    var encima = -1;
+    if(abierto && hayPuntero && !arrastrando){
+      rayo.setFromCamera(puntero, camara);
+      var gg = rayo.intersectObjects(heroes.map(function(h){return h.golpe;}), false);
+      if(gg.length) encima = gg[0].object.userData.idx;
+    }
+    cv.classList.toggle('sobre-flor', encima >= 0);
+
+    camara.getWorldDirection(dirTmp);
+    var w = window.innerWidth, h = window.innerHeight;
+
+    heroes.forEach(function(hx){
+      if(!reduce) hx.ang += dt*hx.vel;
+      hx.cont.position.set(Math.cos(hx.ang)*hx.radio, hx.altura + Math.sin(t*0.7 + hx.ang)*0.9, Math.sin(hx.ang)*hx.radio);
+      hx.flor.rotation.y += dt*0.5;
+      hx.flor.rotation.x = Math.sin(t*0.6 + hx.ang)*0.22;
+
+      var meta = encima === hx.idx ? 1 : 0;
+      hx.brillo += (meta - hx.brillo)*0.12;
+      hx.flor.scale.setScalar(hx.base * (1 + hx.brillo*0.09));
+      var mp = hx.flor.userData.matPetalo;
+      if(mp) mp.emissive.copy(hx.flor.userData.tinte).multiplyScalar(0.10 + hx.brillo*0.22);
+
+      vTmp.copy(hx.cont.position);
+      mundo.localToWorld(vTmp);
+      var delante = vTmp.clone().sub(camara.position).dot(dirTmp) > 0;
+      vTmp.project(camara);
+      hx.btn.style.left = ((vTmp.x*0.5+0.5)*w) + 'px';
+      hx.btn.style.top  = ((-vTmp.y*0.5+0.5)*h - 62*hx.datos.escala) + 'px';
+      var ver = delante && abierto;
+      hx.btn.style.opacity = ver ? (0.42 + hx.brillo*0.58).toFixed(2) : '0';
+      hx.btn.style.pointerEvents = ver ? 'auto' : 'none';
+    });
+
+    mundo.rotation.y += dt*0.006;
+    renderer.render(escena, camara);
+    requestAnimationFrame(bucle);
+  }
+  requestAnimationFrame(bucle);
+})();
+</script>
+</body>
+</html>
